@@ -37,10 +37,6 @@ export function getSensorData(buf: ArrayBuffer): SensorData1 | SensorData2 | nul
         return null;
       }
 
-      if (d[4] !== 0) {
-        return null;
-      }
-
       return {
         sq: d[4]!,
         focus: d[5]!,

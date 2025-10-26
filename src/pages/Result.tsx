@@ -4,13 +4,16 @@ import ReactECharts from 'echarts-for-react';
 import type { EChartsOption } from 'echarts';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
+import { Home, Monitor } from 'lucide-react';
 import { useMonitorStore } from '../store/monitorStore';
+import { Button } from '../components/ui/button';
+import Layout from '../components/Layout';
 
 dayjs.extend(duration);
 
 export default function Result() {
   const navigate = useNavigate();
-  const { samples, recordStartTime, series } = useMonitorStore();
+  const { samples, recordStartTime } = useMonitorStore();
 
   // 计算统计数据
   const stats = useMemo(() => {
@@ -74,7 +77,7 @@ export default function Result() {
       },
       xAxis: {
         type: 'time',
-        boundaryGap: false,
+        boundaryGap: [0, 0],
         axisLabel: {
           formatter: (value: number) => dayjs(value).format('HH:mm:ss'),
         },
@@ -102,7 +105,11 @@ export default function Result() {
         {
           name: '专注度',
           type: 'line',
-          showSymbol: false,
+          smooth: true,
+          showSymbol: true,
+          symbol: 'circle',
+          symbolSize: 6,
+          itemStyle: { color: '#fff', borderColor: '#3b82f6', borderWidth: 2 },
           data: samples.map(s => [s.t, s.focus]),
           lineStyle: {
             width: 2,
@@ -125,7 +132,11 @@ export default function Result() {
         {
           name: '放松度',
           type: 'line',
-          showSymbol: false,
+          smooth: true,
+          showSymbol: true,
+          symbol: 'circle',
+          symbolSize: 6,
+          itemStyle: { color: '#fff', borderColor: '#10b981', borderWidth: 2 },
           data: samples.map(s => [s.t, s.relax]),
           lineStyle: {
             width: 2,
@@ -166,39 +177,44 @@ export default function Result() {
 
   if (samples.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <Layout showBackButton className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
         <div className="text-center space-y-4">
           <div className="text-gray-500 text-lg">暂无数据</div>
-          <button
+          <Button
             onClick={() => navigate('/monitor')}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            variant="default"
+            size="lg"
           >
+            <Monitor className="w-4 h-4" />
             返回监测
-          </button>
+          </Button>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <Layout showBackButton className="p-6 space-y-6">
         {/* 标题 */}
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold text-gray-800">训练结果</h1>
           <div className="flex gap-2">
-            <button
+            <Button
               onClick={() => navigate('/monitor')}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              variant="default"
+              size="default"
             >
+              <Monitor className="w-4 h-4" />
               返回监测
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => navigate('/')}
-              className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+              variant="secondary"
+              size="default"
             >
+              <Home className="w-4 h-4" />
               返回首页
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -255,8 +271,7 @@ export default function Result() {
             </div>
           </div>
         )}
-      </div>
-    </div>
+    </Layout>
   );
 }
 

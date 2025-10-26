@@ -121,6 +121,25 @@ export const useMonitorStore = create<MonitorState>((set, get) => ({
     const { isRecording, samples, series } = get();
     const now = Date.now();
     
+    // 控制台打印每秒的数据
+    console.log('📊 传感器数据:', {
+      时间: new Date(now).toLocaleTimeString(),
+      佩戴状态: data.sq === 0 ? '✅ 正常' : '❌ 不正常',
+      专注度: data.focus,
+      放松度: data.relax,
+      脑波频段: {
+        Delta: data.delta,
+        Theta: data.theta,
+        '低α波': data.lowAlpha,
+        '高α波': data.highAlpha,
+        '低β波': data.lowBeta,
+        '高β波': data.highBeta,
+        '低γ波': data.lowGamma,
+        '高γ波': data.highGamma,
+      },
+      录制中: isRecording ? '🔴 是' : '⚪️ 否',
+    });
+    
     set({
       currentSensor: data,
       lastDataTs: now,

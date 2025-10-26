@@ -9,5 +9,12 @@ export default {
     extend: {},
   },
   plugins: [],
+  future: {
+    disableColorOpacityUtilitiesByDefault: false,
+    respectDefaultRingColorOpacity: false,
+  },
+  corePlugins: {
+    preflight: true,
+  },
 } satisfies Config
 

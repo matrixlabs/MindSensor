@@ -22,6 +22,57 @@ export function isBluetoothSupported(): boolean {
   return typeof navigator !== 'undefined' && 'bluetooth' in navigator;
 }
 
+// 权限状态类型
+export type BluetoothPermissionState = 'granted' | 'denied' | 'prompt' | 'unknown';
+
+// 检查 Permissions API 是否可用
+function isPermissionsApiAvailable(): boolean {
+  return typeof navigator !== 'undefined' && typeof (navigator as any).permissions?.query === 'function';
+}
+
+// 获取蓝牙权限状态（尽力而为：某些浏览器/配置下不支持）
+export async function getBluetoothPermissionState(): Promise<BluetoothPermissionState> {
+  if (!isBluetoothSupported()) {
+    return 'unknown';
+  }
+  try {
+    if (!isPermissionsApiAvailable()) {
+      return 'unknown';
+    }
+    const status = await (navigator as any).permissions.query({ name: 'bluetooth' } as any);
+    const state: string = (status && (status.state || status.status)) || 'prompt';
+    if (state === 'granted' || state === 'denied' || state === 'prompt') {
+      return state as BluetoothPermissionState;
+    }
+    return 'unknown';
+  } catch {
+    return 'unknown';
+  }
+}
+
+// 申请蓝牙权限（通过触发浏览器权限/选择框）。需要用户手势点击触发。
+export async function requestBluetoothPermission(): Promise<BluetoothPermissionState> {
+  if (!isBluetoothSupported()) {
+    return 'unknown';
+  }
+  try {
+    // 优先尝试使用 requestDevice 触发权限授予（最兼容）
+    await navigator.bluetooth.requestDevice({
+      filters: [{ namePrefix: 'Mindsensor_' }],
+      optionalServices: [SERVICE_UUID],
+    } as any);
+    // 用户成功选择设备，视为已授权
+    return 'granted';
+  } catch (error: any) {
+    // 用户取消或未选择设备通常抛出 NotFoundError，将其视为尚未授权（prompt）
+    const name = error?.name || '';
+    if (name === 'NotFoundError') {
+      return 'prompt';
+    }
+    return 'denied';
+  }
+}
+
 // 扫描设备（10 秒超时）
 export async function startScan(durationMs = 10000): Promise<void> {
   if (!isBluetoothSupported()) {
@@ -145,6 +196,16 @@ export async function connectDevice(device: BluetoothDevice): Promise<void> {
 
     // 更新状态
     store.setConnected(device);
+    
+    // 持久化连接信息（供后续页面展示或调试）
+    try {
+      const info = {
+        id: device.id,
+        name: device.name || '',
+        connectedAt: Date.now(),
+      };
+      localStorage.setItem('lastConnectedDevice', JSON.stringify(info));
+    } catch {}
     
     // 重置合包状态
     part1 = undefined;
