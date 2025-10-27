@@ -67,3 +67,6 @@ export interface SeriesData {
   highGamma: number[];
 }
 
+
+export {};
+

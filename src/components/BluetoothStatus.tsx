@@ -5,11 +5,10 @@ import 'dayjs/locale/zh-cn';
 import { Bluetooth, Activity, AlertCircle } from 'lucide-react';
 import { useMonitorStore } from '../store/monitorStore';
 import { disconnectDevice } from '../bluetooth/mindsensor';
-import DeviceList from './DeviceList';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Alert, AlertDescription } from './ui/alert';
-import { 
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -23,7 +22,6 @@ dayjs.locale('zh-cn');
 export default function BluetoothStatus() {
   const { connectionState, connected, lastDataTs, possibleDrop, wearOk, focus, relax } = useMonitorStore();
   const [showModal, setShowModal] = useState(false);
-  const [showDeviceList, setShowDeviceList] = useState(false);
 
   const getStatusVariant = () => {
     if (possibleDrop) return 'destructive';
@@ -43,10 +41,6 @@ export default function BluetoothStatus() {
   const handleDisconnect = async () => {
     await disconnectDevice();
     setShowModal(false);
-  };
-
-  const handleConnectAnother = () => {
-    setShowDeviceList(true);
   };
 
   return (
@@ -133,27 +127,12 @@ export default function BluetoothStatus() {
               )}
             </div>
 
-            {/* 设备列表（连接其他时显示） */}
-            {showDeviceList && (
-              <div className="pt-4 border-t">
-                <DeviceList onConnected={() => {
-                  setShowDeviceList(false);
-                  setShowModal(false);
-                }} />
-              </div>
-            )}
+
           </div>
 
           <DialogFooter>
             {connected && (
               <>
-                <Button
-                  onClick={handleConnectAnother}
-                  variant="default"
-                  className="w-full sm:w-auto"
-                >
-                  连接其他设备
-                </Button>
                 <Button
                   onClick={handleDisconnect}
                   variant="destructive"

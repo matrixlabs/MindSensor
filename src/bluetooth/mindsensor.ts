@@ -57,7 +57,7 @@ export async function requestBluetoothPermission(): Promise<BluetoothPermissionS
   }
   try {
     // 优先尝试使用 requestDevice 触发权限授予（最兼容）
-    await navigator.bluetooth.requestDevice({
+    await (navigator as any).bluetooth.requestDevice({
       filters: [{ namePrefix: 'Mindsensor_' }],
       optionalServices: [SERVICE_UUID],
     } as any);
@@ -84,14 +84,14 @@ export async function startScan(durationMs = 10000): Promise<void> {
   store.setScanning(true);
 
   // 检查是否支持 requestLEScan（Chrome 实验性 API）
-  const bluetooth = navigator.bluetooth as any;
+  const bluetooth = (navigator as any).bluetooth as any;
   
   try {
     if (bluetooth.requestLEScan) {
       // 使用实验性扫描 API
       scanAbortController = new AbortController();
       
-      const scan = await bluetooth.requestLEScan({
+      await bluetooth.requestLEScan({
         filters: [{ namePrefix: 'Mindsensor_' }],
         keepRepeatedDevices: false,
       });
@@ -142,7 +142,7 @@ export async function requestDevice(): Promise<BluetoothDevice> {
   }
 
   try {
-    const device = await navigator.bluetooth.requestDevice({
+    const device = await (navigator as any).bluetooth.requestDevice({
       filters: [{ namePrefix: 'Mindsensor_' }],
       optionalServices: [SERVICE_UUID],
     }) as BluetoothDevice;
@@ -222,7 +222,10 @@ export async function connectDevice(device: BluetoothDevice): Promise<void> {
 function handleCharacteristicValueChanged(event: Event): void {
   const target = event.target as any;
   const dv = target.value as DataView;
-  const ab = dv.buffer.slice(dv.byteOffset, dv.byteOffset + dv.byteLength);
+  // 确保为标准 ArrayBuffer，避免 SharedArrayBuffer 类型不匹配
+  const bytes = new Uint8Array(dv.byteLength);
+  bytes.set(new Uint8Array(dv.buffer, dv.byteOffset, dv.byteLength));
+  const ab = bytes.buffer;
   
   const data = getSensorData(ab);
   if (!data) return;

@@ -5,8 +5,8 @@ import { useMonitorStore } from '../store/monitorStore';
 import { 
   setupDropCheckInterval,
   isBluetoothSupported,
-  requestDevice,
   connectDevice,
+  requestDevice
 } from '../bluetooth/mindsensor';
 import ReactECharts from 'echarts-for-react';
 import type { EChartsOption } from 'echarts';

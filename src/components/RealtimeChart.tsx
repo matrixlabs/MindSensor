@@ -41,7 +41,7 @@ export default function RealtimeChart() {
       },
       xAxis: {
         type: 'time',
-        boundaryGap: false,
+        boundaryGap: [0, 0],
         axisLabel: {
           formatter: (value: number) => dayjs(value).format('HH:mm:ss'),
         },
