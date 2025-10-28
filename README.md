@@ -113,29 +113,6 @@ src/
 └── index.css                 # 全局样式
 ```
 
-## 蓝牙协议
-
-### Service UUID
-`039AFFF0-2C94-11E3-9E06-0002A5D5C51B`
-
-### Characteristics
-
-- **Write**: `039AFFA0-2C94-11E3-9E06-0002A5D5C51B`
-  - 启动命令: `[77, 71, 1]`
-
-- **Notify**: `039AFFF4-2C94-11E3-9E06-0002A5D5C51B`
-  - 接收数据（两段合包）
-
-### 数据格式
-
-**第一段 (aa01010f)**:
-- sq: 信号质量（0=正常）
-- focus: 专注度
-- relax: 放松度
-- delta, theta, lowAlpha, highAlpha
-
-**第二段 (aa01020c)**:
-- lowBeta, highBeta, lowGamma, highGamma
 
 ## 注意事项
 
