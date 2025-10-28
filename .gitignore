@@ -22,3 +22,20 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# env
+.env
+
+# Memory Bank
+memory-bank/
+
+# Cursor
+.cursor
+
+# Codex
+.codex
+AGENTS.md
+
+# Claude
+.claude
+CLAUDE.md
