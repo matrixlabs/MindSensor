@@ -3,6 +3,7 @@ import App from './App';
 import Home from './pages/Home';
 import Monitor from './pages/Monitor';
 import Result from './pages/Result';
+import Records from './pages/Records';
 
 export const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ export const router = createBrowserRouter([
       {
         path: 'result',
         element: <Result />,
+      },
+      {
+        path: 'records',
+        element: <Records />,
       },
     ],
   },
