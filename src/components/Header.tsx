@@ -14,7 +14,7 @@ export default function Header({ showBackButton = false }: HeaderProps) {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-full bg-linear-to-br from-orange-400 to-pink-500" />
-            <span className="text-xl font-semibold text-black">意念精灵</span>
+            <span className="text-xl font-semibold text-black">Mind Sensor</span>
           </div>
           {showBackButton && (
             <Button
@@ -22,7 +22,7 @@ export default function Header({ showBackButton = false }: HeaderProps) {
               variant="outline"
               className="h-12 px-8 border-slate-300 text-slate-500 rounded-lg ml-4"
             >
-              返回首页
+              Return to Home
             </Button>
           )}
         </div>

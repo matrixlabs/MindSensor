@@ -11,10 +11,10 @@ export default function Home() {
       <div className="text-center space-y-8 p-8">
         <div>
           <h1 className="text-5xl font-bold text-gray-800 mb-4">
-            Mindsensor 监测
+            Mindsensor Monitoring
           </h1>
           <p className="text-xl text-gray-600">
-            实时脑电波数据采集与分析 + 区块链存储
+            Real-time EEG Data Collection & Analysis + Blockchain Storage
           </p>
         </div>
 
@@ -25,7 +25,7 @@ export default function Home() {
             className="text-lg px-8 py-6 h-auto"
           >
             <Activity className="w-5 h-5" />
-            进入监测页面
+            Enter Monitoring Page
           </Button>
 
           <Button
@@ -35,14 +35,14 @@ export default function Home() {
             className="text-lg px-8 py-6 h-auto"
           >
             <History className="w-5 h-5" />
-            查看训练记录
+            View Training Records
           </Button>
         </div>
 
         <div className="text-sm text-gray-500 mt-8">
-          <p>请确保您的设备支持蓝牙并已开启</p>
-          <p>建议使用桌面版 Chrome 浏览器</p>
-          <p className="mt-2 text-purple-600">连接 Solana 钱包即可将训练数据永久保存在区块链上</p>
+          <p>Please ensure your device supports Bluetooth and is turned on</p>
+          <p>Recommend using desktop Chrome browser</p>
+          <p className="mt-2 text-purple-600">Connect Solana wallet to permanently save training data on blockchain</p>
         </div>
       </div>
     </Layout>

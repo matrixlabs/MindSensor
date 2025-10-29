@@ -5,14 +5,14 @@ import type { MeditationEvaluation, MeditationRecord } from '../types/meditation
 type ConnectionState = 'idle' | 'scanning' | 'connecting' | 'connected';
 
 interface MonitorState {
-  // 连接状态
+  // Connection state
   connectionState: ConnectionState;
   scanning: boolean;
   devices: BluetoothDevice[];
   connectingId?: string;
   connected?: BluetoothDevice;
 
-  // 数据状态
+  // Data state
   lastDataTs?: number;
   possibleDrop: boolean;
   wearOk: boolean;
@@ -20,19 +20,19 @@ interface MonitorState {
   relax: number;
   currentSensor: SensorData | null;
 
-  // 录制状态
+  // Recording state
   isRecording: boolean;
   recordStartTime?: number;
   samples: DataPoint[];
   series: SeriesData;
 
-  // 区块链状态
+  // Blockchain state
   evaluation: MeditationEvaluation | null;
   isSubmitting: boolean;
   submissionError: string | null;
   lastSubmittedRecord: MeditationRecord | null;
 
-  // 动作
+  // Actions
   setScanning: (scanning: boolean) => void;
   addDevice: (device: BluetoothDevice) => void;
   clearDevices: () => void;
@@ -47,7 +47,7 @@ interface MonitorState {
   stopRecord: () => void;
   clearData: () => void;
 
-  // 区块链动作
+  // Blockchain actions
   setEvaluation: (evaluation: MeditationEvaluation | null) => void;
   setSubmitting: (isSubmitting: boolean) => void;
   setSubmissionError: (error: string | null) => void;
@@ -71,7 +71,7 @@ const initialSeriesData: SeriesData = {
 };
 
 export const useMonitorStore = create<MonitorState>((set, get) => ({
-  // 初始状态
+  // Initial state
   connectionState: 'idle',
   scanning: false,
   devices: [],
@@ -84,13 +84,13 @@ export const useMonitorStore = create<MonitorState>((set, get) => ({
   samples: [],
   series: { ...initialSeriesData },
 
-  // 区块链初始状态
+  // Blockchain initial state
   evaluation: null,
   isSubmitting: false,
   submissionError: null,
   lastSubmittedRecord: null,
   
-  // 扫描相关
+  // Scanning related
   setScanning: (scanning) => {
     set({
       scanning,
@@ -100,7 +100,7 @@ export const useMonitorStore = create<MonitorState>((set, get) => ({
   
   addDevice: (device) => {
     const { devices } = get();
-    // 避免重复添加
+    // Avoid duplicate additions
     if (!devices.find(d => d.id === device.id)) {
       set({ devices: [...devices, device] });
     }
@@ -108,7 +108,7 @@ export const useMonitorStore = create<MonitorState>((set, get) => ({
   
   clearDevices: () => set({ devices: [] }),
   
-  // 连接相关
+  // Connection related
   setConnecting: (deviceId) => {
     set({
       connectingId: deviceId,
@@ -125,7 +125,7 @@ export const useMonitorStore = create<MonitorState>((set, get) => ({
     });
   },
   
-  // 数据处理
+  // Data processing
   onSensorData1: (sq, focus, relax) => {
     set({
       wearOk: sq === 0,
@@ -140,23 +140,23 @@ export const useMonitorStore = create<MonitorState>((set, get) => ({
     const { isRecording, samples, series } = get();
     const now = Date.now();
     
-    // 控制台打印每秒的数据
-    console.log('📊 传感器数据:', {
-      时间: new Date(now).toLocaleTimeString(),
-      佩戴状态: data.sq === 0 ? '✅ 正常' : '❌ 不正常',
-      专注度: data.focus,
-      放松度: data.relax,
-      脑波频段: {
+    // Console print data every second
+    console.log('📊 Sensor data:', {
+      Time: new Date(now).toLocaleTimeString(),
+      'Wearing status': data.sq === 0 ? '✅ Normal' : '❌ Abnormal',
+      Focus: data.focus,
+      Relaxation: data.relax,
+      'EEG bands': {
         Delta: data.delta,
         Theta: data.theta,
-        '低α波': data.lowAlpha,
-        '高α波': data.highAlpha,
-        '低β波': data.lowBeta,
-        '高β波': data.highBeta,
-        '低γ波': data.lowGamma,
-        '高γ波': data.highGamma,
+        'Low α wave': data.lowAlpha,
+        'High α wave': data.highAlpha,
+        'Low β wave': data.lowBeta,
+        'High β wave': data.highBeta,
+        'Low γ wave': data.lowGamma,
+        'High γ wave': data.highGamma,
       },
-      录制中: isRecording ? '🔴 是' : '⚪️ 否',
+      Recording: isRecording ? '🔴 Yes' : '⚪️ No',
     });
     
     set({
@@ -168,7 +168,7 @@ export const useMonitorStore = create<MonitorState>((set, get) => ({
     });
     
     if (isRecording) {
-      // 添加数据点
+      // Add data point
       set({
         samples: [...samples, { t: now, focus: data.focus, relax: data.relax }],
         series: {
@@ -194,12 +194,12 @@ export const useMonitorStore = create<MonitorState>((set, get) => ({
     }
   },
   
-  // 录制控制
+  // Recording control
   startRecord: () => {
     set({
       isRecording: true,
       recordStartTime: Date.now(),
-      // 清除之前的区块链状态，开始新的记录
+      // Clear previous blockchain state, start new record
       evaluation: null,
       submissionError: null,
       lastSubmittedRecord: null,
@@ -222,7 +222,7 @@ export const useMonitorStore = create<MonitorState>((set, get) => ({
     });
   },
 
-  // 区块链动作
+  // Blockchain actions
   setEvaluation: (evaluation) => {
     set({ evaluation });
   },
@@ -239,7 +239,7 @@ export const useMonitorStore = create<MonitorState>((set, get) => ({
     set({ lastSubmittedRecord: record });
   },
 
-  // 断开连接
+  // Disconnect
   disconnect: () => {
     set({
       connected: undefined,
@@ -249,7 +249,7 @@ export const useMonitorStore = create<MonitorState>((set, get) => ({
     });
   },
   
-  // 重置所有状态
+  // Reset all state
   reset: () => {
     set({
       connectionState: 'idle',

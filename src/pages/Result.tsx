@@ -55,7 +55,7 @@ export default function Result() {
     }
   }, [samples, series, connected, evaluation, setEvaluation]);
 
-  // 计算统计数据
+  // Calculate statistical data
   const stats = useMemo(() => {
     if (samples.length === 0) {
       return {
@@ -72,7 +72,7 @@ export default function Result() {
     const focusValues = samples.map(s => s.focus);
     const relaxValues = samples.map(s => s.relax);
 
-    const duration = samples.length; // 秒数
+    const duration = samples.length; // seconds
     const avgFocus = Math.round(focusValues.reduce((a, b) => a + b, 0) / focusValues.length);
     const avgRelax = Math.round(relaxValues.reduce((a, b) => a + b, 0) / relaxValues.length);
     const maxFocus = Math.max(...focusValues);
@@ -114,20 +114,20 @@ export default function Result() {
         const errorMsg = error.message.toLowerCase();
 
         if (errorMsg.includes('user rejected') || errorMsg.includes('declined') || errorMsg.includes('cancelled')) {
-          userMessage = '您取消了交易签名';
+          userMessage = 'You cancelled the transaction signature';
         } else if (errorMsg.includes('insufficient funds')) {
-          userMessage = '余额不足，请确保账户有足够的 SOL 支付交易费用';
+          userMessage = 'Insufficient balance, please ensure your account has enough SOL to pay transaction fees';
         } else if (errorMsg.includes('timeout') || errorMsg.includes('timed out')) {
-          userMessage = '交易确认超时，请检查网络连接或稍后重试';
+          userMessage = 'Transaction confirmation timeout, please check network connection or try again later';
         } else if (errorMsg.includes('blockhash not found')) {
-          userMessage = '区块哈希过期，请重试';
+          userMessage = 'Blockhash expired, please try again';
         } else if (errorMsg.includes('failed to confirm')) {
-          userMessage = '交易确认失败，网络可能拥堵。已尝试多次重试，请稍后再试';
+          userMessage = 'Transaction confirmation failed, network may be congested. We have retried multiple times, please try again later';
         } else {
-          userMessage = `上链失败: ${error.message}`;
+          userMessage = `Blockchain submission failed: ${error.message}`;
         }
       } else {
-        userMessage = '未知错误，请重试';
+        userMessage = 'Unknown error, please try again';
       }
 
       console.log('📝 User-friendly error:', userMessage);
@@ -138,11 +138,11 @@ export default function Result() {
     }
   }, [evaluation, publicKey, sendTransaction, connection, setSubmitting, setSubmissionError, setLastSubmittedRecord]);
 
-  // 图表配置
+  // Chart configuration
   const chartOption: EChartsOption = useMemo(() => {
     return {
       title: {
-        text: '训练数据总览',
+        text: 'Training Data Overview',
         left: 'center',
       },
       tooltip: {
@@ -161,7 +161,7 @@ export default function Result() {
         },
       },
       legend: {
-        data: ['专注度', '放松度'],
+        data: ['Focus', 'Relaxation'],
         top: 30,
       },
       grid: {
@@ -198,7 +198,7 @@ export default function Result() {
       },
       series: [
         {
-          name: '专注度',
+          name: 'Focus',
           type: 'line',
           smooth: true,
           showSymbol: true,
@@ -225,7 +225,7 @@ export default function Result() {
           },
         },
         {
-          name: '放松度',
+          name: 'Relaxation',
           type: 'line',
           smooth: true,
           showSymbol: true,
@@ -262,11 +262,11 @@ export default function Result() {
     const secs = dur.seconds();
 
     if (hours > 0) {
-      return `${hours}小时${minutes}分${secs}秒`;
+      return `${hours}h ${minutes}m ${secs}s`;
     } else if (minutes > 0) {
-      return `${minutes}分${secs}秒`;
+      return `${minutes}m ${secs}s`;
     } else {
-      return `${secs}秒`;
+      return `${secs}s`;
     }
   };
 
@@ -274,14 +274,14 @@ export default function Result() {
     return (
       <Layout showBackButton className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
         <div className="text-center space-y-4">
-          <div className="text-gray-500 text-lg">暂无数据</div>
+          <div className="text-gray-500 text-lg">No Data Available</div>
           <Button
             onClick={() => navigate('/monitor')}
             variant="default"
             size="lg"
           >
             <Monitor className="w-4 h-4" />
-            返回监测
+            Return to Monitoring
           </Button>
         </div>
       </Layout>
@@ -295,9 +295,9 @@ export default function Result() {
 
   return (
     <Layout showBackButton className="p-6 space-y-6">
-      {/* 标题 */}
+      {/* Title */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-800">训练结果</h1>
+        <h1 className="text-3xl font-bold text-gray-800">Training Results</h1>
         <div className="flex gap-2">
           <Button
             onClick={() => navigate('/monitor')}
@@ -305,7 +305,7 @@ export default function Result() {
             size="default"
           >
             <Monitor className="w-4 h-4" />
-            返回监测
+            Return to Monitoring
           </Button>
           <Button
             onClick={() => navigate('/')}
@@ -313,69 +313,69 @@ export default function Result() {
             size="default"
           >
             <Home className="w-4 h-4" />
-            返回首页
+            Return to Home
           </Button>
         </div>
       </div>
 
-      {/* 统计卡片 */}
+      {/* Statistics cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="text-sm text-gray-600 mb-2">训练时长</div>
+          <div className="text-sm text-gray-600 mb-2">Training Duration</div>
           <div className="text-2xl font-bold text-gray-800">{formatDuration(stats.duration)}</div>
         </div>
         <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="text-sm text-gray-600 mb-2">平均专注度</div>
+          <div className="text-sm text-gray-600 mb-2">Average Focus</div>
           <div className="text-2xl font-bold text-blue-600">{stats.avgFocus}</div>
           <div className="text-xs text-gray-500 mt-1">
-            最高: {stats.maxFocus} / 最低: {stats.minFocus}
+            Max: {stats.maxFocus} / Min: {stats.minFocus}
           </div>
         </div>
         <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="text-sm text-gray-600 mb-2">平均放松度</div>
+          <div className="text-sm text-gray-600 mb-2">Average Relaxation</div>
           <div className="text-2xl font-bold text-green-600">{stats.avgRelax}</div>
           <div className="text-xs text-gray-500 mt-1">
-            最高: {stats.maxRelax} / 最低: {stats.minRelax}
+            Max: {stats.maxRelax} / Min: {stats.minRelax}
           </div>
         </div>
         <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="text-sm text-gray-600 mb-2">数据点数</div>
+          <div className="text-sm text-gray-600 mb-2">Data Points</div>
           <div className="text-2xl font-bold text-purple-600">{samples.length}</div>
-          <div className="text-xs text-gray-500 mt-1">约每秒 1 个数据点</div>
+          <div className="text-xs text-gray-500 mt-1">Approx. 1 data point per second</div>
         </div>
       </div>
 
       {/* AI Evaluation Card - Only show if evaluation exists */}
       {evaluation && (
         <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg shadow-md p-6 border-2 border-purple-200">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">AI 冥想评估</h2>
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">AI Meditation Assessment</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div className="bg-white rounded-lg p-4">
-              <div className="text-sm text-gray-600 mb-1">综合评分</div>
+              <div className="text-sm text-gray-600 mb-1">Composite Score</div>
               <div className="text-3xl font-bold text-purple-600">{evaluation.score}</div>
-              <div className="text-xs text-gray-500 mt-1">满分 100</div>
+              <div className="text-xs text-gray-500 mt-1">Out of 100</div>
             </div>
             <div className="bg-white rounded-lg p-4">
-              <div className="text-sm text-gray-600 mb-1">冥想状态</div>
+              <div className="text-sm text-gray-600 mb-1">Meditation Status</div>
               <div className={`text-xl font-semibold ${evaluation.meditationAchieved ? 'text-green-600' : 'text-orange-600'}`}>
-                {evaluation.meditationAchieved ? '✓ 已达成' : '○ 未达成'}
+                {evaluation.meditationAchieved ? '✓ Achieved' : '○ Not Achieved'}
               </div>
             </div>
             <div className="bg-white rounded-lg p-4">
-              <div className="text-sm text-gray-600 mb-1">脑波特征</div>
+              <div className="text-sm text-gray-600 mb-1">Brainwave Characteristics</div>
               <div className="text-xs text-gray-600">
-                α波比例: {evaluation.alphaRatio}%
+                α Wave Ratio: {evaluation.alphaRatio}%
               </div>
               <div className="text-xs text-gray-600">
-                β波比例: {evaluation.betaRatio}%
+                β Wave Ratio: {evaluation.betaRatio}%
               </div>
             </div>
           </div>
 
           {evaluation.notes && (
             <div className="bg-white rounded-lg p-4 mb-4">
-              <div className="text-sm text-gray-600 mb-2">评估建议</div>
+              <div className="text-sm text-gray-600 mb-2">Assessment Recommendations</div>
               <div className="text-gray-800">{evaluation.notes}</div>
             </div>
           )}
@@ -384,13 +384,13 @@ export default function Result() {
           <div className="bg-white rounded-lg p-4">
             <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
               <Upload className="w-5 h-5" />
-              上链存储
+              Blockchain Storage
             </h3>
 
             {!publicKey ? (
               <div className="space-y-3">
                 <p className="text-sm text-gray-600">
-                  连接钱包后，可将您的冥想评估结果永久存储在 Solana 区块链上
+                  After connecting wallet, you can permanently store your meditation assessment results on the Solana blockchain
                 </p>
                 <WalletMultiButton />
               </div>
@@ -398,10 +398,10 @@ export default function Result() {
               <Alert className="border-green-200 bg-green-50">
                 <CheckCircle className="h-5 w-5 text-green-600" />
                 <div className="ml-2">
-                  <div className="font-semibold text-green-800">已成功上链！</div>
+                  <div className="font-semibold text-green-800">Successfully submitted to blockchain!</div>
                   <AlertDescription className="text-green-700">
                     <div className="mt-2 space-y-1">
-                      <div className="text-sm">交易签名: {lastSubmittedRecord.txSignature.slice(0, 16)}...</div>
+                      <div className="text-sm">Transaction signature: {lastSubmittedRecord.txSignature.slice(0, 16)}...</div>
                       {explorerUrl && (
                         <a
                           href={explorerUrl}
@@ -409,7 +409,7 @@ export default function Result() {
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 underline"
                         >
-                          在 Solana Explorer 查看
+                          View on Solana Explorer
                           <ExternalLink className="w-3 h-3" />
                         </a>
                       )}
@@ -423,14 +423,14 @@ export default function Result() {
                   <Alert variant="destructive">
                     <XCircle className="h-5 w-5" />
                     <div className="ml-2">
-                      <div className="font-semibold">上链失败</div>
+                      <div className="font-semibold">Blockchain Submission Failed</div>
                       <AlertDescription>{submissionError}</AlertDescription>
                     </div>
                   </Alert>
                 )}
 
                 <p className="text-sm text-gray-600">
-                  将评估数据作为不可篡改的记录存储在 Solana 区块链上。您的数据将被永久保存。
+                  Store assessment data as tamper-proof records on the Solana blockchain. Your data will be permanently preserved.
                 </p>
 
                 <div className="flex items-center gap-2">
@@ -442,19 +442,19 @@ export default function Result() {
                     {isSubmitting ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        上链中...
+                        Submitting to Blockchain...
                       </>
                     ) : (
                       <>
                         <Upload className="w-4 h-4" />
-                        提交到区块链
+                        Submit to Blockchain
                       </>
                     )}
                   </Button>
 
                   {isSubmitting && (
                     <span className="text-sm text-gray-600">
-                      正在确认交易，请稍候...
+                      Confirming transaction, please wait...
                     </span>
                   )}
                 </div>
@@ -462,7 +462,7 @@ export default function Result() {
                 <Alert className="border-blue-200 bg-blue-50">
                   <AlertCircle className="h-5 w-5 text-blue-600" />
                   <AlertDescription className="text-blue-700 text-sm ml-2">
-                    需要支付少量 SOL 作为网络费用（约 0.00001 SOL）
+                    Need to pay a small amount of SOL as network fee (approximately 0.00001 SOL)
                   </AlertDescription>
                 </Alert>
               </div>
@@ -471,7 +471,7 @@ export default function Result() {
         </div>
       )}
 
-      {/* 图表 */}
+      {/* Chart */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <ReactECharts
           option={chartOption}
@@ -480,16 +480,16 @@ export default function Result() {
         />
       </div>
 
-      {/* 时间信息 */}
+      {/* Time information */}
       {recordStartTime && (
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="text-sm text-gray-600">
             <div className="flex justify-between py-2 border-b">
-              <span>开始时间:</span>
+              <span>Start Time:</span>
               <span className="font-medium">{dayjs(recordStartTime).format('YYYY-MM-DD HH:mm:ss')}</span>
             </div>
             <div className="flex justify-between py-2">
-              <span>结束时间:</span>
+              <span>End Time:</span>
               <span className="font-medium">
                 {dayjs(recordStartTime + stats.duration * 1000).format('YYYY-MM-DD HH:mm:ss')}
               </span>

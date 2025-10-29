@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import 'dayjs/locale/zh-cn';
+import 'dayjs/locale/en';
 import { Bluetooth, Activity, AlertCircle } from 'lucide-react';
 import { useMonitorStore } from '../store/monitorStore';
 import { disconnectDevice } from '../bluetooth/mindsensor';
@@ -17,7 +17,7 @@ import {
 } from './ui/dialog';
 
 dayjs.extend(relativeTime);
-dayjs.locale('zh-cn');
+dayjs.locale('en');
 
 export default function BluetoothStatus() {
   const { connectionState, connected, lastDataTs, possibleDrop, wearOk, focus, relax } = useMonitorStore();
@@ -31,11 +31,11 @@ export default function BluetoothStatus() {
   };
 
   const getStatusText = () => {
-    if (possibleDrop) return '可能掉线';
-    if (connectionState === 'connected') return '已连接';
-    if (connectionState === 'connecting') return '连接中';
-    if (connectionState === 'scanning') return '扫描中';
-    return '未连接';
+    if (possibleDrop) return 'Possible Disconnection';
+    if (connectionState === 'connected') return 'Connected';
+    if (connectionState === 'connecting') return 'Connecting';
+    if (connectionState === 'scanning') return 'Scanning';
+    return 'Disconnected';
   };
 
   const handleDisconnect = async () => {
@@ -45,7 +45,7 @@ export default function BluetoothStatus() {
 
   return (
     <>
-      {/* 状态指示徽章 */}
+      {/* Status indicator badge */}
       <Button
         onClick={() => setShowModal(true)}
         variant="outline"
@@ -58,18 +58,18 @@ export default function BluetoothStatus() {
         </Badge>
       </Button>
 
-      {/* 弹窗 */}
+      {/* Modal */}
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent onClose={() => setShowModal(false)}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Bluetooth className="w-5 h-5" />
-              蓝牙连接状态
+              Bluetooth Connection Status
             </DialogTitle>
           </DialogHeader>
 
           <div className="px-6 space-y-4">
-            {/* 状态信息 */}
+            {/* Status information */}
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Activity className="w-4 h-4" />
@@ -80,31 +80,31 @@ export default function BluetoothStatus() {
                 <>
                   <div className="text-sm text-gray-600 space-y-2">
                     <div className="flex justify-between py-2 border-b">
-                      <span className="text-gray-500">设备名称:</span>
-                      <span className="font-medium text-gray-900">{connected.name || '未命名'}</span>
+                      <span className="text-gray-500">Device Name:</span>
+                      <span className="font-medium text-gray-900">{connected.name || 'Unnamed'}</span>
                     </div>
                     <div className="flex justify-between py-2 border-b">
-                      <span className="text-gray-500">设备 ID:</span>
+                      <span className="text-gray-500">Device ID:</span>
                       <span className="font-mono text-xs text-gray-700">{connected.id.slice(0, 16)}...</span>
                     </div>
                     {lastDataTs && (
                       <div className="flex justify-between py-2 border-b">
-                        <span className="text-gray-500">上次数据:</span>
+                        <span className="text-gray-500">Last Data:</span>
                         <span className="font-medium text-gray-900">{dayjs(lastDataTs).fromNow()}</span>
                       </div>
                     )}
                     <div className="flex justify-between py-2 border-b">
-                      <span className="text-gray-500">佩戴状态:</span>
+                      <span className="text-gray-500">Wearing Status:</span>
                       <Badge variant={wearOk ? 'success' : 'destructive'}>
-                        {wearOk ? '正常' : '不正常'}
+                        {wearOk ? 'Normal' : 'Abnormal'}
                       </Badge>
                     </div>
                     <div className="flex justify-between py-2 border-b">
-                      <span className="text-gray-500">专注度:</span>
+                      <span className="text-gray-500">Focus:</span>
                       <span className="font-semibold text-blue-600">{focus}</span>
                     </div>
                     <div className="flex justify-between py-2">
-                      <span className="text-gray-500">放松度:</span>
+                      <span className="text-gray-500">Relaxation:</span>
                       <span className="font-semibold text-green-600">{relax}</span>
                     </div>
                   </div>
@@ -113,7 +113,7 @@ export default function BluetoothStatus() {
                     <Alert variant="destructive" className="flex items-center gap-2">
                       <AlertCircle className="h-4 w-4" />
                       <AlertDescription>
-                        设备可能已掉线（超过 3 秒未收到数据）
+                        Device may be disconnected (no data received for more than 3 seconds)
                       </AlertDescription>
                     </Alert>
                   )}
@@ -122,7 +122,7 @@ export default function BluetoothStatus() {
 
               {!connected && (
                 <div className="text-sm text-gray-500 text-center py-8">
-                  当前未连接设备
+                  Currently not connected to device
                 </div>
               )}
             </div>
@@ -138,7 +138,7 @@ export default function BluetoothStatus() {
                   variant="destructive"
                   className="w-full sm:w-auto"
                 >
-                  断开连接
+                  Disconnect
                 </Button>
               </>
             )}
@@ -147,7 +147,7 @@ export default function BluetoothStatus() {
               variant="outline"
               className="w-full sm:w-auto"
             >
-              关闭
+              Close
             </Button>
           </DialogFooter>
         </DialogContent>
