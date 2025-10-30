@@ -15,22 +15,22 @@ import { Alert, AlertDescription } from '../components/ui/alert';
 import Layout from '../components/Layout';
 import MetricCard from '../components/MetricCard';
 
-// 脑波频段配置
+// EEG frequency band configuration
 const WAVE_BANDS = [
-  { key: 'delta', label: 'δ波（Delta）| 睡眠脑波', color: '#fcd34d' },
-  { key: 'theta', label: 'θ波（Theta）| 浅睡脑波', color: '#fca5a5' },
-  { key: 'lowAlpha', label: 'α波低（Low Alpha）| 放松脑波', color: '#86efac' },
-  { key: 'highAlpha', label: 'α波高（High Alpha）| 清醒放松', color: '#93c5fd' },
-  { key: 'lowBeta', label: 'β波低（Low Beta）| 专注思考', color: '#cbd5e1' },
-  { key: 'highBeta', label: 'β波高（High Beta）| 高度警觉', color: '#475569' },
-  { key: 'lowGamma', label: 'γ波低（Low Gamma）| 认知处理', color: '#93c5fd' },
-  { key: 'highGamma', label: 'γ波高（High Gamma）| 高级认知', color: '#cbd5e1' },
+  { key: 'delta', label: 'δ Wave (Delta) | Sleep Wave', color: '#fcd34d' },
+  { key: 'theta', label: 'θ Wave (Theta) | Light Sleep Wave', color: '#fca5a5' },
+  { key: 'lowAlpha', label: 'Low α Wave (Low Alpha) | Relaxation Wave', color: '#86efac' },
+  { key: 'highAlpha', label: 'High α Wave (High Alpha) | Alert Relaxation', color: '#93c5fd' },
+  { key: 'lowBeta', label: 'Low β Wave (Low Beta) | Focused Thinking', color: '#cbd5e1' },
+  { key: 'highBeta', label: 'High β Wave (High Beta) | High Alertness', color: '#475569' },
+  { key: 'lowGamma', label: 'Low γ Wave (Low Gamma) | Cognitive Processing', color: '#93c5fd' },
+  { key: 'highGamma', label: 'High γ Wave (High Gamma) | Advanced Cognition', color: '#cbd5e1' },
 ];
 
 export default function Monitor() {
   const navigate = useNavigate();
   const [supported, setSupported] = useState<boolean>(true);
-  const [tick, setTick] = useState(0); // 用于强制更新测试时长
+  const [tick, setTick] = useState(0); // Used to force test duration updates
   const { 
     connected, 
     isRecording, 
@@ -45,7 +45,7 @@ export default function Monitor() {
     clearData,
   } = useMonitorStore();
 
-  // 最近 1 分钟窗口的起始索引（用于小图）
+  // Index for the last 1 minute window (for small charts)
   const windowStartIndex = useMemo(() => {
     if (samples.length === 0) return 0;
     const cutoff = Date.now() - 60000;
@@ -54,13 +54,13 @@ export default function Monitor() {
   }, [samples, tick]);
 
   useEffect(() => {
-    // 设置掉线检测定时器
+    // Set up disconnection check timer
     const interval = setupDropCheckInterval();
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    // 进入页面时仅检查是否支持（不自动扫描，改为浏览器选择）
+    // When entering the page, only check for support (no auto-scan, browser selection instead)
     const init = async () => {
       const sup = isBluetoothSupported();
       setSupported(sup);
@@ -68,7 +68,7 @@ export default function Monitor() {
     init();
   }, []);
 
-  // 每秒更新一次，用于刷新测试时长
+  // Update every second to refresh test duration
   useEffect(() => {
     if (isRecording) {
       const timer = setInterval(() => {
@@ -83,7 +83,7 @@ export default function Monitor() {
     navigate('/result');
   };
 
-  // 计算综合分数（专注度和放松度的平均值）
+  // Calculate composite score (average of focus and relaxation values)
   const comprehensiveScore = useMemo(() => {
     if (samples.length === 0) return 0;
     const avgFocus = samples.reduce((sum, s) => sum + s.focus, 0) / samples.length;
@@ -91,7 +91,7 @@ export default function Monitor() {
     return Math.round((avgFocus + avgRelax) / 2);
   }, [samples]);
 
-  // 计算测试时长
+  // Calculate test duration
   const testDuration = useMemo(() => {
     if (!recordStartTime) return '00:00';
     const duration = Math.floor((Date.now() - recordStartTime) / 1000);
@@ -100,10 +100,10 @@ export default function Monitor() {
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   }, [recordStartTime, tick]);
 
-  // 主图表配置
+  // Main chart configuration
   const mainChartOption: EChartsOption = useMemo(() => {
     const now = Date.now();
-    const windowStart = now - 60000; // 仅展示最近 1 分钟
+    const windowStart = now - 60000; // Only show last 1 minute
     const filteredSamples = samples.filter(s => s.t >= windowStart);
 
     return {
@@ -184,7 +184,7 @@ export default function Monitor() {
     };
   }, [samples, recordStartTime, tick]);
 
-  // 小图表配置生成器
+  // Small chart configuration generator
   const createSmallChartOption = (dataKey: keyof typeof series, color: string): EChartsOption => {
     const data = (series[dataKey] || []).slice(windowStartIndex);
     
@@ -216,7 +216,7 @@ export default function Monitor() {
     };
   };
 
-  // 如果未连接设备，显示连接界面
+  // If device is not connected, display connection interface
   if (!connected) {
     return (
       <Layout showBackButton className="pt-36">
@@ -224,16 +224,16 @@ export default function Monitor() {
           <Alert variant="destructive" className="flex items-start gap-2">
             <AlertCircle className="h-5 w-5 mt-0.5" />
             <div>
-              <div className="font-semibold mb-1">当前浏览器不支持蓝牙功能</div>
+              <div className="font-semibold mb-1">Current browser does not support Bluetooth</div>
               <AlertDescription>
-                请使用支持 Web Bluetooth 的浏览器（如 Chrome，需启用蓝牙）。
+                Please use a browser that supports Web Bluetooth (e.g., Chrome with Bluetooth enabled).
               </AlertDescription>
             </div>
           </Alert>
         ) : (
           <div className="bg-white rounded-2xl border border-slate-300 p-12 space-y-4 text-center">
-            <h2 className="text-2xl font-semibold text-slate-700">连接设备</h2>
-            <p className="text-slate-600">点击下方按钮，通过浏览器弹窗选择设备并连接。</p>
+            <h2 className="text-2xl font-semibold text-slate-700">Connect Device</h2>
+            <p className="text-slate-600">Click the button below to select and connect device via browser popup.</p>
             <Button
               onClick={async () => {
                 try {
@@ -244,7 +244,7 @@ export default function Monitor() {
               className="h-12 px-8 bg-blue-500 hover:bg-blue-600 text-white font-semibold"
             >
               <Bluetooth className="w-5 h-5" />
-              选择设备并连接
+              Select Device and Connect
             </Button>
           </div>
         )}
@@ -254,23 +254,23 @@ export default function Monitor() {
 
   return (
     <Layout showBackButton className="py-10 space-y-10">
-        {/* 页面标题和控制按钮 */}
+        {/* Page title and control buttons */}
         <div className="flex items-end justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-semibold text-gray-900">实时监测</h1>
+            <h1 className="text-3xl font-semibold text-gray-900">Real-time Monitoring</h1>
             
-            {/* 设备信息卡片 */}
+            {/* Device info card */}
             <div className="flex items-center gap-2 bg-slate-100 rounded-xl px-2 h-12">
               <div className="w-12 h-8 bg-gray-300 rounded" />
               <span className="font-semibold text-blue-500">{connected.name || 'MindSensor'}</span>
               <span className={`font-semibold ${wearOk ? 'text-green-500' : 'text-red-500'}`}>
-                {wearOk ? '佩戴正常' : '佩戴异常'}
+                {wearOk ? 'Wearing Normal' : 'Wearing Abnormal'}
               </span>
               <ChevronRight className="w-6 h-6 text-blue-500" />
             </div>
           </div>
 
-          {/* 测试控制按钮 */}
+          {/* Test control buttons */}
           <div className="flex items-center gap-3">
             <Button
               onClick={() => clearData()}
@@ -278,7 +278,7 @@ export default function Monitor() {
               className="h-12 px-5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               <Trash2 className="w-5 h-5" />
-              清空数据
+              Clear Data
             </Button>
 
             <Button
@@ -294,16 +294,16 @@ export default function Monitor() {
               className={`h-12 px-8 font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 ${isRecording ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm'}`}
             >
               {isRecording && <X className="w-6 h-6" />}
-              {isRecording ? '结束测试' : '开始测试'}
+              {isRecording ? 'End Test' : 'Start Test'}
             </Button>
           </div>
         </div>
 
-        {/* 主数据区域 */}
+        {/* Main data area */}
         <div className="flex gap-4">
-          {/* 左侧：Y轴刻度 + 主图表 */}
+          {/* Left: Y-axis scale + main chart */}
           <div className="flex gap-4 flex-1">
-            {/* Y轴刻度 */}
+            {/* Y-axis scale */}
             <div className="flex flex-col justify-between text-slate-400 text-xl text-right pt-16 pb-7">
               <div>100</div>
               <div>80</div>
@@ -313,17 +313,17 @@ export default function Monitor() {
               <div>0</div>
             </div>
 
-            {/* 主图表区域 */}
+            {/* Main chart area */}
             <div className="flex-1 flex flex-col gap-4">
-              {/* 图表卡片 */}
+              {/* Chart card */}
               <div className="border border-slate-300 rounded-2xl overflow-hidden bg-white h-[520px]">
                 <div className="px-6 py-6 border-b border-slate-100">
-                  <h3 className="text-xl font-semibold text-slate-600">脑波数据曲线</h3>
+                  <h3 className="text-xl font-semibold text-slate-600">EEG Data Curve</h3>
                 </div>
                 <div className="h-[428px] px-4">
                   {samples.length === 0 ? (
                     <div className="h-full flex items-center justify-center text-slate-400">
-                      {isRecording ? '等待数据...' : '点击"开始测试"按钮开始记录数据'}
+                      {isRecording ? 'Waiting for data...' : 'Click "Start Test" button to begin recording data'}
                     </div>
                   ) : (
                     <ReactECharts
@@ -336,27 +336,27 @@ export default function Monitor() {
                 </div>
               </div>
 
-              {/* 时间轴 */}
+              {/* Timeline */}
               <div className="flex items-center justify-between text-slate-400 text-xl font-semibold">
                 <span>00:00</span>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-blue-500" />
-                  <span>{isRecording ? '测试中' : '未开始'}</span>
+                  <span>{isRecording ? 'Testing' : 'Not Started'}</span>
                   <span>{testDuration}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* 右侧：数据卡片 */}
+          {/* Right: Data cards */}
           <div className="flex flex-col gap-4">
-            <MetricCard title="综合分数" value={comprehensiveScore} valueColor="text-slate-900" />
-            <MetricCard title="专注" value={focus} valueColor="text-blue-500" />
-            <MetricCard title="放松" value={relax} valueColor="text-green-500" />
+            <MetricCard title="Composite Score" value={comprehensiveScore} valueColor="text-slate-900" />
+            <MetricCard title="Focus" value={focus} valueColor="text-blue-500" />
+            <MetricCard title="Relaxation" value={relax} valueColor="text-green-500" />
           </div>
         </div>
 
-      {/* 脑波频段图表 */}
+      {/* EEG frequency band charts */}
       <div className="grid grid-cols-3 gap-4">
         {WAVE_BANDS.map((band) => (
           <div key={band.key} className="border border-slate-300 rounded-2xl overflow-hidden bg-white">
@@ -366,7 +366,7 @@ export default function Monitor() {
             <div className="h-[171px] px-4 pb-4">
               {samples.length === 0 ? (
                 <div className="h-full flex items-center justify-center text-slate-400 text-sm">
-                  暂无数据
+                  No Data Available
                 </div>
               ) : (
                 <ReactECharts

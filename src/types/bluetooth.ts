@@ -1,4 +1,4 @@
-// Web Bluetooth API 类型扩展
+// Web Bluetooth API type extensions
 export interface BluetoothDevice {
   id: string;
   name?: string;
@@ -26,7 +26,7 @@ export interface BluetoothRemoteGATTCharacteristic {
   removeEventListener(type: string, listener: EventListener): void;
 }
 
-// Mindsensor 数据类型
+// Mindsensor data types
 export interface SensorData1 {
   sq: number;
   focus: number;
@@ -46,14 +46,14 @@ export interface SensorData2 {
 
 export type SensorData = SensorData1 & SensorData2;
 
-// 录制数据点
+// Recording data point
 export interface DataPoint {
-  t: number; // 时间戳
+  t: number; // Timestamp
   focus: number;
   relax: number;
 }
 
-// 序列数据
+// Series data
 export interface SeriesData {
   focus: number[];
   relax: number[];

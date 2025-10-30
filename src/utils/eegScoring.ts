@@ -109,19 +109,19 @@ export function evaluateEEGSession({
   let notes = '';
   if (meditationAchieved) {
     if (score >= 80) {
-      notes = '优秀的冥想状态！脑波节奏稳定，专注和放松度保持良好平衡。';
+      notes = 'Excellent meditation state! Brainwave rhythm is stable, with a good balance between focus and relaxation.';
     } else if (score >= 60) {
-      notes = '良好的冥想状态。呼吸平稳，脑波进入冥想区间。';
+      notes = 'Good meditation state. Breathing is steady, and brainwaves have entered the meditation range.';
     } else {
-      notes = '基本达到冥想状态。建议继续保持练习以提高稳定性。';
+      notes = 'Basic meditation state achieved. Recommended to continue practicing to improve stability.';
     }
   } else {
     if (!durationAchieved) {
-      notes = '建议延长冥想时长至2分钟以上。';
+      notes = 'Recommended to extend meditation time to 2 minutes or more.';
     } else if (!focusRelaxAchieved && !brainWaveAchieved) {
-      notes = '建议调整呼吸节奏，放松身心，让专注度或放松度达到40以上。';
+      notes = 'Recommended to adjust breathing rhythm, relax the body and mind, and achieve a focus or relaxation score of 40 or above.';
     } else {
-      notes = '继续练习，尝试让脑波进入更深层的冥想状态。';
+      notes = 'Continue practicing, try to get the brainwaves into a deeper meditation state.';
     }
   }
 

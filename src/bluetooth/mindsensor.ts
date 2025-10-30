@@ -2,35 +2,35 @@ import type { BluetoothDevice, SensorData1 } from '../types/bluetooth';
 import { getSensorData } from '../utils/sensorParser';
 import { useMonitorStore } from '../store/monitorStore';
 
-// BLE UUID 常量（转为小写）
+// BLE UUID constants (lowercase)
 const SERVICE_UUID = '039afff0-2c94-11e3-9e06-0002a5d5c51b';
 const CHAR_WRITE_UUID = '039affa0-2c94-11e3-9e06-0002a5d5c51b';
 const CHAR_NOTIFY_UUID = '039afff4-2c94-11e3-9e06-0002a5d5c51b';
 
 const ENABLE_DATA = new Uint8Array([77, 71, 1]);
 
-// 扫描相关变量
+// Scanning related variables
 let scanAbortController: AbortController | null = null;
 let scanTimeout: ReturnType<typeof setTimeout> | null = null;
 
-// 连接状态
+// Connection state
 let part1: SensorData1 | undefined;
 let isHalf = false;
 
-// 检查浏览器是否支持 Web Bluetooth
+// Check if browser supports Web Bluetooth
 export function isBluetoothSupported(): boolean {
   return typeof navigator !== 'undefined' && 'bluetooth' in navigator;
 }
 
-// 权限状态类型
+// Permission state type
 export type BluetoothPermissionState = 'granted' | 'denied' | 'prompt' | 'unknown';
 
-// 检查 Permissions API 是否可用
+// Check if Permissions API is available
 function isPermissionsApiAvailable(): boolean {
   return typeof navigator !== 'undefined' && typeof (navigator as any).permissions?.query === 'function';
 }
 
-// 获取蓝牙权限状态（尽力而为：某些浏览器/配置下不支持）
+// Get Bluetooth permission state (best-effort: not supported in some browsers/configurations)
 export async function getBluetoothPermissionState(): Promise<BluetoothPermissionState> {
   if (!isBluetoothSupported()) {
     return 'unknown';
@@ -50,21 +50,21 @@ export async function getBluetoothPermissionState(): Promise<BluetoothPermission
   }
 }
 
-// 申请蓝牙权限（通过触发浏览器权限/选择框）。需要用户手势点击触发。
+// Request Bluetooth permission (by triggering browser permission/selection dialog). Requires user gesture click to trigger.
 export async function requestBluetoothPermission(): Promise<BluetoothPermissionState> {
   if (!isBluetoothSupported()) {
     return 'unknown';
   }
   try {
-    // 优先尝试使用 requestDevice 触发权限授予（最兼容）
+    // Prefer using requestDevice to trigger permission grant (most compatible)
     await (navigator as any).bluetooth.requestDevice({
       filters: [{ namePrefix: 'Mindsensor_' }],
       optionalServices: [SERVICE_UUID],
     } as any);
-    // 用户成功选择设备，视为已授权
+    // User successfully selected device, consider it authorized
     return 'granted';
   } catch (error: any) {
-    // 用户取消或未选择设备通常抛出 NotFoundError，将其视为尚未授权（prompt）
+    // User cancels or doesn't select device usually throws NotFoundError, consider it unauthorized (prompt)
     const name = error?.name || '';
     if (name === 'NotFoundError') {
       return 'prompt';
@@ -73,22 +73,22 @@ export async function requestBluetoothPermission(): Promise<BluetoothPermissionS
   }
 }
 
-// 扫描设备（10 秒超时）
+// Scan for devices (10 second timeout)
 export async function startScan(durationMs = 10000): Promise<void> {
   if (!isBluetoothSupported()) {
-    throw new Error('当前浏览器不支持 Web Bluetooth API');
+    throw new Error('Current browser does not support Web Bluetooth API');
   }
 
   const store = useMonitorStore.getState();
   store.clearDevices();
   store.setScanning(true);
 
-  // 检查是否支持 requestLEScan（Chrome 实验性 API）
+  // Check if requestLEScan is supported (Chrome experimental API)
   const bluetooth = (navigator as any).bluetooth as any;
   
   try {
     if (bluetooth.requestLEScan) {
-      // 使用实验性扫描 API
+      // Use experimental scan API
       scanAbortController = new AbortController();
       
       await bluetooth.requestLEScan({
@@ -103,23 +103,23 @@ export async function startScan(durationMs = 10000): Promise<void> {
         }
       }, { signal: scanAbortController.signal });
 
-      // 10 秒后自动停止
+      // Automatically stop after 10 seconds
       scanTimeout = setTimeout(() => {
         stopScan();
       }, durationMs);
     } else {
-      // 退化方案：使用 requestDevice（会弹出浏览器选择框）
-      console.log('requestLEScan 不可用，请使用 requestDevice 手动选择设备');
+      // Fallback: use requestDevice (will popup browser selection dialog)
+      console.log('requestLEScan not available, please use requestDevice to manually select device');
       store.setScanning(false);
     }
   } catch (error) {
-    console.error('扫描失败:', error);
+    console.error('Scan failed:', error);
     store.setScanning(false);
     throw error;
   }
 }
 
-// 停止扫描
+// Stop scanning
 export function stopScan(): void {
   if (scanAbortController) {
     scanAbortController.abort();
@@ -135,10 +135,10 @@ export function stopScan(): void {
   store.setScanning(false);
 }
 
-// 手动选择设备（requestDevice 方式）
+// Manually select device (requestDevice method)
 export async function requestDevice(): Promise<BluetoothDevice> {
   if (!isBluetoothSupported()) {
-    throw new Error('当前浏览器不支持 Web Bluetooth API');
+    throw new Error('Current browser does not support Web Bluetooth API');
   }
 
   try {
@@ -149,16 +149,16 @@ export async function requestDevice(): Promise<BluetoothDevice> {
 
     return device;
   } catch (error) {
-    console.error('选择设备失败:', error);
+    console.error('Failed to select device:', error);
     throw error;
   }
 }
 
-// 连接设备并启动数据传输
+// Connect device and start data transmission
 export async function connectDevice(device: BluetoothDevice): Promise<void> {
   const store = useMonitorStore.getState();
   
-  // 如果正在扫描，先停止
+  // If currently scanning, stop first
   if (store.scanning) {
     stopScan();
   }
@@ -166,38 +166,38 @@ export async function connectDevice(device: BluetoothDevice): Promise<void> {
   store.setConnecting(device.id);
 
   try {
-    // 连接 GATT 服务器
+    // Connect to GATT server
     const server = await device.gatt!.connect();
-    console.log('已连接到 GATT 服务器');
+    console.log('Connected to GATT server');
 
-    // 获取主服务
+    // Get primary service
     const service = await server.getPrimaryService(SERVICE_UUID);
-    console.log('已获取主服务');
+    console.log('Retrieved primary service');
 
-    // 获取写入特征
+    // Get write characteristic
     const writeChar = await service.getCharacteristic(CHAR_WRITE_UUID);
     
-    // 写入启动命令
+    // Write start command
     await writeChar.writeValue(ENABLE_DATA);
-    console.log('已写入启动命令');
+    console.log('Wrote start command');
 
-    // 获取通知特征
+    // Get notification characteristic
     const notifyChar = await service.getCharacteristic(CHAR_NOTIFY_UUID);
     
-    // 启动通知
+    // Start notifications
     await notifyChar.startNotifications();
-    console.log('已启动通知');
+    console.log('Started notifications');
 
-    // 监听数据
+    // Listen for data
     notifyChar.addEventListener('characteristicvaluechanged', handleCharacteristicValueChanged);
 
-    // 监听断开连接
+    // Listen for disconnection
     device.addEventListener('gattserverdisconnected', handleDisconnect);
 
-    // 更新状态
+    // Update state
     store.setConnected(device);
     
-    // 持久化连接信息（供后续页面展示或调试）
+    // Persist connection info (for subsequent page display or debugging)
     try {
       const info = {
         id: device.id,
@@ -207,22 +207,22 @@ export async function connectDevice(device: BluetoothDevice): Promise<void> {
       localStorage.setItem('lastConnectedDevice', JSON.stringify(info));
     } catch {}
     
-    // 重置合包状态
+    // Reset packet state
     part1 = undefined;
     isHalf = false;
 
   } catch (error) {
-    console.error('连接失败:', error);
+    console.error('Connection failed:', error);
     store.setConnecting(undefined);
     throw error;
   }
 }
 
-// 处理特征值变化（接收数据）
+// Handle characteristic value change (receive data)
 function handleCharacteristicValueChanged(event: Event): void {
   const target = event.target as any;
   const dv = target.value as DataView;
-  // 确保为标准 ArrayBuffer，避免 SharedArrayBuffer 类型不匹配
+  // Ensure standard ArrayBuffer to avoid SharedArrayBuffer type mismatch
   const bytes = new Uint8Array(dv.byteLength);
   bytes.set(new Uint8Array(dv.buffer, dv.byteOffset, dv.byteLength));
   const ab = bytes.buffer;
@@ -233,12 +233,12 @@ function handleCharacteristicValueChanged(event: Event): void {
   const store = useMonitorStore.getState();
 
   if ('sq' in data) {
-    // 第一段数据：包含 sq、focus、relax 和前 4 个频段
+    // First segment data: contains sq, focus, relax and first 4 bands
     part1 = data;
     isHalf = true;
     store.onSensorData1(data.sq, data.focus, data.relax);
   } else if (isHalf && part1) {
-    // 第二段数据：合并
+    // Second segment data: merge
     const fullData = { ...part1, ...data };
     isHalf = false;
     part1 = undefined;
@@ -246,18 +246,18 @@ function handleCharacteristicValueChanged(event: Event): void {
   }
 }
 
-// 处理断开连接
+// Handle disconnection
 function handleDisconnect(): void {
-  console.log('设备已断开连接');
+  console.log('Device disconnected');
   const store = useMonitorStore.getState();
   store.disconnect();
   
-  // 重置合包状态
+  // Reset packet state
   part1 = undefined;
   isHalf = false;
 }
 
-// 主动断开设备
+// Actively disconnect device
 export async function disconnectDevice(device?: BluetoothDevice): Promise<void> {
   const store = useMonitorStore.getState();
   const targetDevice = device || store.connected;
@@ -267,25 +267,25 @@ export async function disconnectDevice(device?: BluetoothDevice): Promise<void> 
   }
 
   try {
-    // 移除事件监听
+    // Remove event listener
     targetDevice.removeEventListener('gattserverdisconnected', handleDisconnect);
     
-    // 断开连接
+    // Disconnect
     if (targetDevice.gatt.connected) {
       targetDevice.gatt.disconnect();
     }
     
     store.disconnect();
     
-    // 重置合包状态
+    // Reset packet state
     part1 = undefined;
     isHalf = false;
   } catch (error) {
-    console.error('断开连接失败:', error);
+    console.error('Failed to disconnect:', error);
   }
 }
 
-// 定期检查掉线（可在组件中调用）
+// Periodic disconnection check (can be called in components)
 export function setupDropCheckInterval(): ReturnType<typeof setInterval> {
   return setInterval(() => {
     const store = useMonitorStore.getState();

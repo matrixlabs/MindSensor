@@ -11,7 +11,7 @@ export default function RealtimeChart() {
     return {
       animation: false,
       title: {
-        text: '实时脑电波数据',
+        text: 'Real-time EEG Data',
         left: 'center',
       },
       tooltip: {
@@ -30,7 +30,7 @@ export default function RealtimeChart() {
         },
       },
       legend: {
-        data: ['专注度', '放松度'],
+        data: ['Focus', 'Relaxation'],
         top: 30,
       },
       grid: {
@@ -67,7 +67,7 @@ export default function RealtimeChart() {
       },
       series: [
         {
-          name: '专注度',
+          name: 'Focus',
           type: 'line',
           showSymbol: false,
           data: samples.map(s => [s.t, s.focus]),
@@ -90,7 +90,7 @@ export default function RealtimeChart() {
           },
         },
         {
-          name: '放松度',
+          name: 'Relaxation',
           type: 'line',
           showSymbol: false,
           data: samples.map(s => [s.t, s.relax]),
@@ -120,7 +120,7 @@ export default function RealtimeChart() {
     <div className="bg-white rounded-lg shadow-md p-6">
       {samples.length === 0 ? (
         <div className="h-96 flex items-center justify-center text-gray-500">
-          {recordStartTime ? '等待数据...' : '点击"开始"按钮开始记录数据'}
+          {recordStartTime ? 'Waiting for data...' : 'Click "Start" button to begin recording data'}
         </div>
       ) : (
         <ReactECharts

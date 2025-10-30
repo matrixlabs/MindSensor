@@ -103,21 +103,21 @@ export default function Records() {
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full">
             <CheckCircle className="w-3 h-3" />
-            已确认
+            Confirmed
           </span>
         );
       case 'pending':
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold text-yellow-700 bg-yellow-100 rounded-full">
             <Clock className="w-3 h-3" />
-            待确认
+            Pending
           </span>
         );
       case 'failed':
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold text-red-700 bg-red-100 rounded-full">
             <XCircle className="w-3 h-3" />
-            失败
+            Failed
           </span>
         );
       default:
@@ -130,8 +130,8 @@ export default function Records() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">训练记录</h1>
-          <p className="text-gray-600 mt-1">查看您的链上冥想训练历史</p>
+          <h1 className="text-3xl font-bold text-gray-800">Training Records</h1>
+          <p className="text-gray-600 mt-1">View your on-chain meditation training history</p>
         </div>
         <Button
           onClick={() => navigate('/')}
@@ -139,7 +139,7 @@ export default function Records() {
           size="default"
         >
           <Home className="w-4 h-4" />
-          返回首页
+          Return to Home
         </Button>
       </div>
 
@@ -148,12 +148,12 @@ export default function Records() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div>
-              <div className="text-sm text-gray-600">当前网络</div>
+              <div className="text-sm text-gray-600">Current Network</div>
               <div className="text-lg font-semibold text-purple-600">{networkName}</div>
             </div>
             {publicKey && (
               <div>
-                <div className="text-sm text-gray-600">钱包地址</div>
+                <div className="text-sm text-gray-600">Wallet Address</div>
                 <div className="text-sm font-mono text-gray-800">
                   {publicKey.toBase58().slice(0, 8)}...{publicKey.toBase58().slice(-8)}
                 </div>
@@ -173,7 +173,7 @@ export default function Records() {
                   size="sm"
                 >
                   <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                  {isRefreshing ? '刷新中...' : '刷新'}
+                  {isRefreshing ? 'Refreshing...' : 'Refresh'}
                 </Button>
                 <Button
                   onClick={handleClearCache}
@@ -182,7 +182,7 @@ export default function Records() {
                   size="sm"
                 >
                   <Trash2 className="w-4 h-4" />
-                  清空缓存
+                  Clear Cache
                 </Button>
                 <WalletMultiButton />
               </>
@@ -196,9 +196,9 @@ export default function Records() {
         <Alert variant="destructive">
           <XCircle className="h-5 w-5" />
           <div className="ml-2">
-            <div className="font-semibold">加载失败</div>
+            <div className="font-semibold">Loading failed</div>
             <AlertDescription>
-              {error instanceof Error ? error.message : '无法加载链上记录'}
+              {error instanceof Error ? error.message : 'Unable to load on-chain records'}
             </AlertDescription>
           </div>
         </Alert>
@@ -209,7 +209,7 @@ export default function Records() {
         <div className="flex items-center justify-center py-12">
           <div className="text-center space-y-4">
             <div className="w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-gray-600">加载链上记录中...</p>
+            <p className="text-gray-600">Loading on-chain records...</p>
           </div>
         </div>
       )}
@@ -218,9 +218,9 @@ export default function Records() {
       {!isLoading && allRecords.length === 0 && (
         <div className="flex items-center justify-center py-12">
           <div className="text-center space-y-4">
-            <div className="text-gray-400 text-lg">暂无训练记录</div>
+            <div className="text-gray-400 text-lg">No training records</div>
             {!publicKey && (
-              <p className="text-gray-600">连接钱包以查看您的链上记录</p>
+              <p className="text-gray-600">Connect wallet to view your on-chain records</p>
             )}
           </div>
         </div>
@@ -235,7 +235,7 @@ export default function Records() {
               ? dayjs.unix(record.blockTime).format('YYYY-MM-DD HH:mm:ss')
               : record.timestamp
               ? dayjs.unix(record.timestamp).format('YYYY-MM-DD HH:mm:ss')
-              : '未知时间';
+              : 'Unknown time';
 
             return (
               <div
@@ -245,7 +245,7 @@ export default function Records() {
                 {/* Header */}
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <div className="text-sm text-gray-600 mb-1">评分</div>
+                    <div className="text-sm text-gray-600 mb-1">Score</div>
                     <div className="text-3xl font-bold text-purple-600">{record.score}</div>
                   </div>
                   {getStatusBadge(record.status)}
@@ -254,34 +254,34 @@ export default function Records() {
                 {/* Details */}
                 <div className="space-y-2 mb-4">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">时长</span>
-                    <span className="font-medium">{Math.floor(record.durationSec / 60)}分{record.durationSec % 60}秒</span>
+                    <span className="text-gray-600">Duration</span>
+                    <span className="font-medium">{Math.floor(record.durationSec / 60)}m {record.durationSec % 60}s</span>
                   </div>
 
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">状态</span>
+                    <span className="text-gray-600">Status</span>
                     <span className={`font-medium ${record.meditationAchieved ? 'text-green-600' : 'text-orange-600'}`}>
-                      {record.meditationAchieved ? '已达成' : '未达成'}
+                      {record.meditationAchieved ? 'Achieved' : 'Not Achieved'}
                     </span>
                   </div>
 
                   {record.avgFocus !== undefined && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">平均专注度</span>
+                      <span className="text-gray-600">Avg Focus</span>
                       <span className="font-medium text-blue-600">{record.avgFocus}</span>
                     </div>
                   )}
 
                   {record.avgRelax !== undefined && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">平均放松度</span>
+                      <span className="text-gray-600">Avg Relaxation</span>
                       <span className="font-medium text-green-600">{record.avgRelax}</span>
                     </div>
                   )}
 
                   {record.alphaRatio !== undefined && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">α波比例</span>
+                      <span className="text-gray-600">α Wave Ratio</span>
                       <span className="font-medium">{record.alphaRatio}%</span>
                     </div>
                   )}
@@ -304,13 +304,13 @@ export default function Records() {
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 underline"
                     >
-                      在 Explorer 查看
+                      View on Explorer
                       <ExternalLink className="w-3 h-3" />
                     </a>
                   )}
                   {record.status === 'pending' && (
                     <div className="text-xs text-yellow-600">
-                      交易待确认...
+                      Transaction pending confirmation...
                     </div>
                   )}
                 </div>
@@ -323,28 +323,28 @@ export default function Records() {
       {/* Summary Stats */}
       {allRecords.length > 0 && (
         <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg shadow-md p-6 border border-purple-200">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">统计概览</h2>
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Summary Overview</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-white rounded-lg p-4">
-              <div className="text-sm text-gray-600 mb-1">总记录数</div>
+              <div className="text-sm text-gray-600 mb-1">Total Records</div>
               <div className="text-2xl font-bold text-purple-600">{allRecords.length}</div>
             </div>
             <div className="bg-white rounded-lg p-4">
-              <div className="text-sm text-gray-600 mb-1">平均评分</div>
+              <div className="text-sm text-gray-600 mb-1">Average Score</div>
               <div className="text-2xl font-bold text-blue-600">
                 {Math.round(allRecords.reduce((sum, r) => sum + r.score, 0) / allRecords.length)}
               </div>
             </div>
             <div className="bg-white rounded-lg p-4">
-              <div className="text-sm text-gray-600 mb-1">已达成次数</div>
+              <div className="text-sm text-gray-600 mb-1">Achieved Count</div>
               <div className="text-2xl font-bold text-green-600">
                 {allRecords.filter(r => r.meditationAchieved).length}
               </div>
             </div>
             <div className="bg-white rounded-lg p-4">
-              <div className="text-sm text-gray-600 mb-1">总时长</div>
+              <div className="text-sm text-gray-600 mb-1">Total Duration</div>
               <div className="text-2xl font-bold text-orange-600">
-                {Math.floor(allRecords.reduce((sum, r) => sum + r.durationSec, 0) / 60)}分
+                {Math.floor(allRecords.reduce((sum, r) => sum + r.durationSec, 0) / 60)}m
               </div>
             </div>
           </div>
